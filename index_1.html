@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AstraMedica × Sanita — Hasta Takip</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F6F8FA;--white:#fff;--border:#E1E4E8;--border2:#D0D7DE;
+  --text:#24292F;--text2:#57606A;--text3:#8C959F;
+  --teal:#0D9488;--teal-lt:#CCFBF1;--teal-dk:#0F766E;
+  --purple:#7C3AED;--purple-lt:#EDE9FE;
+  --amber:#D97706;--amber-lt:#FEF3C7;
+  --red:#DC2626;--red-lt:#FEE2E2;
+  --blue:#2563EB;--blue-lt:#DBEAFE;
+  --green:#16A34A;--green-lt:#DCFCE7;
+  --gray-lt:#F3F4F6;
+  --radius:8px;--radius-sm:6px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:13px;min-height:100vh}
+
+/* ── TOP BAR ── */
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-dot{width:26px;height:26px;background:var(--teal);border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700}
+.logo-name{font-size:14px;font-weight:600}
+.logo-sep{color:var(--text3);margin:0 4px}
+.logo-sub{font-size:12px;color:var(--text2)}
+.live{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--teal);background:var(--teal-lt);padding:3px 10px;border-radius:99px}
+.live-dot{width:6px;height:6px;background:var(--teal);border-radius:50%;animation:blink 1.8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.top-actions{display:flex;align-items:center;gap:8px}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--white);color:var(--text);font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;font-weight:500;transition:.15s}
+.btn:hover{background:var(--gray-lt)}
+.btn-green{background:var(--teal);color:#fff;border-color:var(--teal-dk)}
+.btn-green:hover{background:var(--teal-dk)}
+.btn-sm{padding:4px 9px;font-size:11px}
+.btn-ghost{border-color:transparent;background:transparent;color:var(--text2)}
+.btn-ghost:hover{background:var(--gray-lt);color:var(--text)}
+
+/* ── FILTERS BAR ── */
+.filters{background:var(--white);border-bottom:1px solid var(--border);padding:8px 20px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.search-wrap{position:relative}
+.search-wrap input{padding:6px 10px 6px 28px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:12px;font-family:'Inter',sans-serif;width:220px;background:var(--white);color:var(--text)}
+.search-wrap::before{content:'🔍';position:absolute;left:8px;top:50%;transform:translateY(-50%);font-size:11px;pointer-events:none}
+.search-wrap input:focus{outline:none;border-color:var(--teal)}
+select.fsel{padding:6px 10px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:12px;font-family:'Inter',sans-serif;background:var(--white);color:var(--text);cursor:pointer}
+
+/* ── STATUS PILLS (filter bar) ── */
+.status-pills{display:flex;gap:4px;flex-wrap:wrap}
+.spill{padding:4px 10px;border-radius:99px;font-size:11px;font-weight:500;cursor:pointer;border:1.5px solid transparent;transition:.15s}
+.spill:hover{filter:brightness(.94)}
+.spill.active{border-color:var(--text)!important}
+
+/* ── MAIN TABLE ── */
+.table-wrap{padding:16px 20px}
+.tbl{width:100%;border-collapse:collapse;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;table-layout:fixed}
+.tbl th{background:var(--gray-lt);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);padding:9px 12px;text-align:left;border-bottom:1px solid var(--border)}
+.tbl td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr.data-row:hover td{background:#F6FFFE;cursor:pointer}
+.tbl tr.data-row.selected td{background:var(--teal-lt)}
+.col-ref{width:185px}.col-name{width:175px}.col-treat{width:130px}.col-status{width:160px}.col-prog{width:115px}.col-nat{width:95px}.col-upd{width:95px}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:500;white-space:nowrap}
+.ref-badge{font-family:monospace;font-size:10px;padding:2px 7px;border-radius:5px;border:1px solid;display:inline-flex;align-items:center;gap:4px;max-width:175px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+.ref-badge:hover{filter:brightness(.95)}
+
+/* branch */
+.b-IVF{background:var(--purple-lt);color:#5B21B6;border-color:#C4B5FD}
+.b-Aesth{background:#FFF7ED;color:#C2410C;border-color:#FDBA74}
+.b-Ortho{background:var(--blue-lt);color:#1D4ED8;border-color:#93C5FD}
+.b-Hair{background:var(--green-lt);color:#15803D;border-color:#86EFAC}
+.b-Eye{background:var(--teal-lt);color:var(--teal-dk);border-color:#99F6E4}
+.b-Dental{background:var(--amber-lt);color:#B45309;border-color:#FCD34D}
+.b-CheckUp{background:var(--gray-lt);color:#374151;border-color:#D1D5DB}
+.b-Gyneco{background:#FDF2F8;color:#9D174D;border-color:#F9A8D4}
+.b-DBS{background:var(--red-lt);color:#B91C1C;border-color:#FCA5A5}
+.b-Bariat{background:#F0FDF4;color:#166534;border-color:#86EFAC}
+.b-Other{background:var(--gray-lt);color:var(--text2);border-color:var(--border2)}
+
+/* ── FILE UPLOAD ── */
+.upload-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:14px;text-align:center;cursor:pointer;transition:.15s;background:var(--gray-lt)}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--teal);background:var(--teal-lt)}
+.upload-zone input[type=file]{display:none}
+.uz-label{font-size:12px;color:var(--text2)}
+.uz-label span{color:var(--teal);font-weight:600;cursor:pointer}
+.file-list{display:flex;flex-direction:column;gap:4px;margin-top:8px}
+.file-item{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm)}
+.file-icon{font-size:15px;flex-shrink:0}
+.file-name{flex:1;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--teal);text-decoration:none}
+.file-name:hover{text-decoration:underline}
+.file-meta{font-size:10px;color:var(--text3);white-space:nowrap}
+.file-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:13px;padding:0 2px;line-height:1}
+.file-del:hover{color:var(--red)}
+
+/* status */
+.s-new{background:var(--gray-lt);color:#374151}
+.s-wait{background:var(--amber-lt);color:#92400E}
+.s-med{background:var(--blue-lt);color:#1E40AF}
+.s-pat{background:var(--purple-lt);color:#5B21B6}
+.s-ops{background:var(--teal-lt);color:var(--teal-dk)}
+.s-done{background:var(--green-lt);color:#166534}
+.s-cancel{background:var(--red-lt);color:#991B1B}
+
+/* progress dots */
+.dots{display:flex;gap:3px;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--border)}
+.dot.on{background:var(--teal)}.dot.cur{background:var(--amber)}
+
+/* ── SIDE PANEL ── */
+.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:200;display:none}
+.panel-overlay.open{display:block}
+.panel{position:fixed;top:0;right:-600px;width:600px;max-width:100vw;height:100vh;background:var(--white);border-left:1px solid var(--border);z-index:201;display:flex;flex-direction:column;transition:right .25s ease;overflow:hidden}
+.panel.open{right:0}
+.panel-hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0}
+.panel-hdr h2{font-size:15px;font-weight:600;margin-bottom:4px}
+.panel-body{flex:1;overflow-y:auto;padding:18px}
+.panel-ftr{padding:12px 18px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+
+/* ── FORM ── */
+.slabel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-top:18px;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.slabel:first-child{margin-top:0}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.ff{display:flex;flex-direction:column;gap:3px}
+.ff label{font-size:10px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.03em}
+.ff input,.ff select,.ff textarea{padding:6px 9px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:12px;font-family:'Inter',sans-serif;color:var(--text);background:var(--white);transition:.15s}
+.ff input:focus,.ff select:focus,.ff textarea:focus{outline:none;border-color:var(--teal)}
+.ff input[readonly]{background:var(--gray-lt);color:var(--text2)}
+.ff textarea{min-height:54px;resize:vertical}
+
+/* ── CHECKLIST ── */
+.checklist{display:flex;flex-direction:column;gap:4px}
+.ci{display:flex;align-items:center;gap:8px;padding:6px 9px;border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;transition:.12s}
+.ci:hover{background:var(--gray-lt)}
+.ci.on{border-color:#99F6E4;background:var(--teal-lt)}
+.ci.on .ci-label{text-decoration:line-through;color:var(--text3)}
+.ci input[type=checkbox]{width:13px;height:13px;accent-color:var(--teal);flex-shrink:0}
+.ci-label{flex:1;font-size:12px}
+.ci-tag{font-size:10px;color:var(--text3);white-space:nowrap}
+
+/* ── TESTS 2-col ── */
+.t2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tbox{border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px}
+.tbox-title{font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text2);margin-bottom:7px;letter-spacing:.04em}
+
+/* ── PIPELINE ── */
+.pipe{display:flex;flex-direction:column}
+.prow{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.prow:last-child{border-bottom:none}
+.pnum{width:20px;height:20px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.pnum.done{background:var(--teal-lt);color:var(--teal-dk)}
+.pnum.curr{background:var(--amber-lt);color:var(--amber)}
+.pnum.pend{background:var(--gray-lt);color:var(--text3)}
+.ptitle{font-size:12px;font-weight:500;margin-bottom:2px}
+.pdesc{font-size:11px;color:var(--text2)}
+.ptags{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
+.ptag{padding:2px 9px;border-radius:99px;font-size:10px;font-weight:500;cursor:pointer;border:1px solid;transition:.12s;font-family:'Inter',sans-serif}
+.ptag-done{background:var(--teal-lt);color:var(--teal-dk);border-color:#99F6E4}
+.ptag-wait{background:var(--amber-lt);color:#92400E;border-color:#FCD34D}
+.ptag-off{background:var(--gray-lt);color:var(--text2);border-color:var(--border)}
+.ptag:hover{filter:brightness(.94)}
+
+/* ── TIMELINE ── */
+.tl{display:flex;flex-direction:column}
+.tl-row{display:flex;gap:9px;padding:7px 0;position:relative}
+.tl-row::before{content:'';position:absolute;left:9px;top:25px;bottom:-6px;width:1px;background:var(--border)}
+.tl-row:last-child::before{display:none}
+.tl-dot{width:20px;height:20px;border-radius:50%;background:var(--teal-lt);border:2px solid var(--teal);flex-shrink:0;z-index:1;display:flex;align-items:center;justify-content:center;font-size:9px}
+.tl-ts{font-size:10px;color:var(--text3)}
+.tl-msg{font-size:12px;color:var(--text)}
+
+/* ── ADD FORM (inline top) ── */
+.add-form{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin:12px 20px 0;display:none}
+.add-form.open{display:block}
+.branch-section{margin-bottom:10px}
+.bs-label{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{padding:3px 10px;border:1px solid var(--border2);border-radius:99px;font-size:11px;cursor:pointer;color:var(--text2);background:var(--gray-lt);transition:.12s;font-family:'Inter',sans-serif;font-weight:500}
+.chip.sel{background:var(--teal-lt);color:var(--teal-dk);border-color:#99F6E4}
+.chip:hover{border-color:var(--teal);color:var(--teal)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(12px);background:#1F2937;color:#fff;padding:9px 18px;border-radius:var(--radius);font-size:12px;font-weight:500;z-index:999;opacity:0;transition:.22s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:48px;color:var(--text3);font-size:13px}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-dot">AC</div>
+    <span class="logo-name">AstraMedica</span>
+    <span class="logo-sep">×</span>
+    <span class="logo-sub">Sanita Group</span>
+  </div>
+  <div class="live"><span class="live-dot"></span><span id="liveLabel">Canlı</span></div>
+  <div class="top-actions">
+    <button class="btn btn-sm btn-ghost" onclick="exportCSV()">⬇ CSV</button>
+    <button class="btn btn-sm btn-green" onclick="toggleAddForm()">+ Yeni Hasta</button>
+  </div>
+</div>
+
+<!-- ADD FORM (inline) -->
+<div class="add-form" id="addForm">
+  <div style="font-size:13px;font-weight:600;margin-bottom:12px">Yeni Hasta Kaydı</div>
+  <div class="fg3">
+    <div class="ff"><label>Ad Soyad *</label><input id="nf-name" placeholder="Ad Soyad"></div>
+    <div class="ff"><label>Uyruk / Ülke</label><input id="nf-nat" placeholder="Ülke"></div>
+    <div class="ff"><label>Email / WhatsApp</label><input id="nf-contact" placeholder="iletişim"></div>
+  </div>
+  <div class="fg3">
+    <div class="ff"><label>Yaş</label><input id="nf-age" type="number" placeholder="Yaş"></div>
+    <div class="ff"><label>Eş / Partner Yaşı</label><input id="nf-sage" type="number" placeholder="Yaş"></div>
+    <div class="ff"><label>Tanı / Başvuru</label><input id="nf-diag" placeholder="Ana tanı"></div>
+  </div>
+  <!-- Branch chips -->
+  <div id="addChips" style="margin-bottom:10px"></div>
+  <div class="fg">
+    <div class="ff"><label>Not</label><input id="nf-notes" placeholder="Özel notlar..."></div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:10px">
+    <button class="btn btn-green btn-sm" onclick="doAdd()">✓ Kaydet</button>
+    <button class="btn btn-sm" onclick="toggleAddForm()">İptal</button>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filters">
+  <div class="search-wrap"><input id="srch" placeholder="Ad, kayıt no, branş..." oninput="render()"></div>
+  <select class="fsel" id="bF" onchange="render()">
+    <option value="">Tüm Branşlar</option>
+  </select>
+  <select class="fsel" id="stF" onchange="render()">
+    <option value="">Tüm Durumlar</option>
+  </select>
+  <button class="btn btn-ghost btn-sm" onclick="clearF()">✕ Temizle</button>
+  <span id="countBadge" style="margin-left:auto;font-size:11px;color:var(--text3)"></span>
+</div>
+
+<!-- TABLE -->
+<div class="table-wrap">
+  <table class="tbl">
+    <thead>
+      <tr>
+        <th class="col-ref">Kayıt No</th>
+        <th class="col-name">Hasta</th>
+        <th class="col-treat">Branş / Tedavi</th>
+        <th class="col-status">Durum</th>
+        <th class="col-prog">İlerleme</th>
+        <th class="col-nat">Uyruk</th>
+        <th class="col-upd">Güncelleme</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<!-- SIDE PANEL -->
+<div class="panel-overlay" id="panelOverlay" onclick="closePanel()"></div>
+<div class="panel" id="panel">
+  <div class="panel-hdr">
+    <div>
+      <h2 id="pTitle">Hasta</h2>
+      <div id="pRef"></div>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="closePanel()">✕ Kapat</button>
+  </div>
+  <div class="panel-body" id="panelBody"></div>
+  <div class="panel-ftr">
+    <button class="btn btn-sm" style="color:var(--red);border-color:#FCA5A5" onclick="doDelete()">🗑 Sil</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-sm" onclick="closePanel()">Kapat</button>
+      <button class="btn btn-green btn-sm" onclick="doSave()">✓ Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─── BRANCH DATA ─── */
+const BR=[
+  {k:'IVF',    lb:'IVF / Üreme',     code:'IVF',    em:'💜',
+   tr:['IVF (1 Siklus)','IVF + PGT-A','IUI','Donör Yumurta','Embriyo Dondurma','ICSI']},
+  {k:'Aesth',  lb:'Estetik Cerrahi', code:'Aesth',  em:'✨',
+   tr:['Yüz Germe (Deep Plane)','Blefaroplasti','Rinoplasti','Liposakşın','Bişektomi','Alın/Kaş Kaldırma','Meme Estetiği','Karın Germe','Kulak Estetiği']},
+  {k:'Ortho',  lb:'Ortopedi',        code:'Ortho',  em:'🦴',
+   tr:['Diz Protezi','Kalça Protezi','Omurga Cerrahisi','Artroskopi','Omuz Cerrahisi','El-Bilek Cerrahisi']},
+  {k:'Hair',   lb:'Saç Ekimi',       code:'Hair',   em:'✂️',
+   tr:['FUE Saç Ekimi','DHI Saç Ekimi','Sakal Ekimi','Kaş Ekimi','PRP Saç Tedavisi']},
+  {k:'Eye',    lb:'Göz',             code:'Eye',    em:'👁',
+   tr:['LASIK','LASEK / PRK','Göz İçi Lens (RLE)','Katarakt Ameliyatı','Şaşılık Tedavisi']},
+  {k:'Dental', lb:'Diş',             code:'Dental', em:'🦷',
+   tr:['Diş İmplantı','Hollywood Smile','Zirkonyum Kaplama','Diş Beyazlatma','Ortodonti / Invisalign','All-on-4','All-on-6']},
+  {k:'CheckUp',lb:'Check-Up',        code:'CheckUp',em:'🩺',
+   tr:['Genel Check-Up','Kardiyoloji Check-Up','Onkoloji Tarama','Kapsamlı Kan Tahlili','Görüntüleme Paketi','Erkek Sağlığı Paketi','Kadın Sağlığı Paketi']},
+  {k:'Gyneco', lb:'Jinekoloji',      code:'Gyneco', em:'🌸',
+   tr:['Histerektomi','Miyom Operasyonu','Laparoskopi','Rahim Ağzı Tarama','Menopoz Danışmanlığı','Polip Tedavisi']},
+  {k:'DBS',    lb:'DBS / Nöroloji',  code:'DBS',    em:'🧠',
+   tr:['Derin Beyin Stimülasyonu (DBS)','Parkinson Tedavisi','Tremor Tedavisi','Nörolojik Değerlendirme','Epilepsi Cerrahisi']},
+  {k:'Bariat', lb:'Bariatrik',       code:'Bariat', em:'⚕️',
+   tr:['Mide Balonu','Tüp Mide (Sleeve)','Gastrik Bypass','Mini Bypass']},
+  {k:'Other',  lb:'Diğer',           code:'Other',  em:'➕', tr:['Diğer / Belirtilmemiş']},
+];
+
+const ST=[
+  {lb:'Yeni Kayıt',             cls:'s-new'},
+  {lb:'Bilgi İstendi',          cls:'s-wait'},
+  {lb:'Evrak Bekleniyor',       cls:'s-wait'},
+  {lb:'Evrak Alındı',           cls:'s-med'},
+  {lb:"Sanita'ya İletildi",     cls:'s-med'},
+  {lb:'Tedavi Planı Hazır',     cls:'s-pat'},
+  {lb:'Plân Hastaya Gönderildi',cls:'s-pat'},
+  {lb:'Hasta Onayladı',         cls:'s-ops'},
+  {lb:'Sözleşme İmzalandı',     cls:'s-ops'},
+  {lb:'Operasyon Planlandı',    cls:'s-ops'},
+  {lb:'Tamamlandı',             cls:'s-done'},
+  {lb:'İptal',                  cls:'s-cancel'},
+];
+
+const PIPE=[
+  {id:'info',   lb:'Bilgi / evrak istendi',     ds:'Hastaya talep gönderildi'},
+  {id:'docs',   lb:'Evrak alındı',              ds:'Tıbbi geçmiş ve belgeler geldi'},
+  {id:'sanita', lb:"Sanita'ya iletildi",        ds:'Dosya Sanita\'ya gönderildi'},
+  {id:'review', lb:'Doktor incelemesinde',      ds:'Uzman değerlendiriyor'},
+  {id:'plan',   lb:'Tedavi planı hazır',        ds:'Sanita tarafından hazırlandı'},
+  {id:'sent',   lb:'Plân hastaya gönderildi',   ds:'Hasta yanıtı bekleniyor'},
+  {id:'ok',     lb:'Hasta onayladı',            ds:'Onay alındı'},
+  {id:'contract',lb:'Sözleşme imzalandı',       ds:'Süreç tamamlandı'},
+];
+
+const IVF_F=['AMH','Anti-HIV','TSH','Anti-HCV','Estradiol (E2)','Anti-HBs','Prolactin','HBsAg','Fasting Blood Sugar','Blood Type','Hemogram (CBC)','PT','APTT','Rahim Ağzı Filmi (HSG)'];
+const IVF_M=['Anti-HIV','Anti-HCV','Anti-HBs','HBsAg','Spermiyogram','PGT (yapılmışsa)'];
+const GEN=['Ad, Soyad, Doğum Tarihi','Boy & Kilo','Alkol Kullanımı','Sigara Kullanımı','Kronik Hastalıklar','Kullanılan İlaçlar','Geçirilen Ameliyatlar','Alerjiler','Protez / İmplant / Materyal','Hamilelik Geçmişi'];
+
+/* ─── STATE ─── */
+let pts=[], cid=null;
+
+/* ─── SUPABASE CONFIG ─── */
+const SB_URL='https://wekebyakdwqietbdczrl.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indla2VieWFrZHdxaWV0YmRjenJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTk0MzgsImV4cCI6MjA5NTY3NTQzOH0.vOrbp6ZbanLK-0Ck-SzsrHwfZZoAVcVImxU9iUtrjOQ';
+const SB_HDR={'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY};
+let SB_ROW_ID=null; // single row ID in DB
+
+async function sbGet(){
+  const r=await fetch(`${SB_URL}/rest/v1/patients?select=*&order=id.asc&limit=1`,{headers:SB_HDR});
+  const rows=await r.json();
+  if(rows&&rows.length){SB_ROW_ID=rows[0].id;return JSON.parse(rows[0].data);}
+  return null;
+}
+async function sbSet(data){
+  const body=JSON.stringify({data:JSON.stringify(data),updated_at:new Date().toISOString()});
+  if(SB_ROW_ID){
+    await fetch(`${SB_URL}/rest/v1/patients?id=eq.${SB_ROW_ID}`,{method:'PATCH',headers:SB_HDR,body});
+  } else {
+    const r=await fetch(`${SB_URL}/rest/v1/patients`,{method:'POST',headers:{...SB_HDR,'Prefer':'return=representation'},body});
+    const rows=await r.json();if(rows&&rows[0])SB_ROW_ID=rows[0].id;
+  }
+}
+
+async function load(){
+  document.getElementById('liveLabel').textContent='Bağlanıyor...';
+  try{
+    const data=await sbGet();
+    if(data&&data.length){pts=data;}
+    else{pts=seed();await sbSet(pts);}
+  }catch(e){console.warn('Supabase bağlantı hatası, yerel mod:',e);pts=seed();}
+  document.getElementById('liveLabel').textContent='Canlı';
+  initUI();render();
+  // Poll every 8 seconds for real-time updates
+  setInterval(async()=>{
+    try{
+      const data=await sbGet();
+      if(data&&data.length){pts=data;initUI();render();}
+    }catch{}
+  },8000);
+}
+
+async function save(){
+  try{await sbSet(pts);}
+  catch(e){console.warn('Kayıt hatası:',e);}
+}
+
+/* ─── SEED DATA ─── */
+function seed(){
+  return [
+    mk(1,'Rastia Tasnim & Abdus','Bangladeş','28','31','IVF (1 Siklus)','Tiroid, Düzensiz Adet','Plân Hastaya Gönderildi',
+       {info:1,docs:1,sanita:1,review:1,plan:1,sent:1,ok:0,contract:0},
+       '2 yıldır deniyor. IUI geçmişi var.','Tiroid ilacı','Tedavi planı yanıtı bekleniyor'),
+    mk(2,'Tamba Lebbie','Sierra Leone','38','46','IVF (1 Siklus)','Primer İnfertilite',"Sanita'ya İletildi",
+       {info:1,docs:1,sanita:1,review:0,plan:0,sent:0,ok:0,contract:0},
+       '~2 yıldır çalışıyor.','','Vize mektubu gerekli'),
+    mk(3,'Marie Green','ABD','','','IVF (1 Siklus)','PCOS','Evrak Alındı',
+       {info:1,docs:1,sanita:0,review:0,plan:0,sent:0,ok:0,contract:0},
+       'PKOS tanısı.','',''),
+    mk(4,'Jinet Leon','Kolombiya','47','34','IVF (1 Siklus)','Doktor önerisi IVF','Evrak Bekleniyor',
+       {info:1,docs:0,sanita:0,review:0,plan:0,sent:0,ok:0,contract:0},
+       '','',''),
+    mk(5,'Augustine','Nijerya','23','51','IVF (1 Siklus)','İnfertilite','Evrak Bekleniyor',
+       {info:1,docs:0,sanita:0,review:0,plan:0,sent:0,ok:0,contract:0},
+       'İkiz kız, ekim başı hedefi.','',''),
+    mk(6,'Aliza','Pakistan','','','IVF + PGT-A','Rekürren Gebelik Kaybı','Bilgi İstendi',
+       {info:1,docs:0,sanita:0,review:0,plan:0,sent:0,ok:0,contract:0},
+       '2 düşük. Testler normal.','',''),
+    mk(7,'Naushen','Rusya','55','','Yüz Germe (Deep Plane)','Fasiyal Gençleştirme','Yeni Kayıt',
+       {info:0,docs:0,sanita:0,review:0,plan:0,sent:0,ok:0,contract:0},
+       'Çoklu prosedür. Rinoplasti ek öneri.','','Rinoplasti değerlendiriliyor'),
+  ];
+}
+function mk(id,name,nat,age,sage,treatment,diagnosis,status,pipe,history,meds,notes){
+  return{id,name,nat,age,sage,treatment,diagnosis,status,
+    pipeline:pipe,history,meds,surgeries:'',smoking:'',alcohol:'',notes,
+    height:'',weight:'',
+    generalDocs:{},femaleTests:{},maleTests:{},contact:'',
+    files:[],
+    updated:td(),
+    tl:[{ts:td()+' 09:00',msg:'Hasta kaydı oluşturuldu'}]};
+}
+
+/* ─── HELPERS ─── */
+function branch(t){
+  if(!t)return BR[BR.length-1];
+  const l=t.toLowerCase();
+  if(l.includes('ivf')||l.includes('iui')||l.includes('pgt')||l.includes('embriyo')||l.includes('icsi'))return BR[0];
+  if(l.includes('yüz')||l.includes('blef')||l.includes('rinoplasti')||l.includes('lipo')||l.includes('bişek')||l.includes('alın')||l.includes('meme')||l.includes('karın')||l.includes('kulak est'))return BR[1];
+  if(l.includes('diz')||l.includes('kalça')||l.includes('omurga')||l.includes('artr')||l.includes('omuz')||l.includes('el-bilek'))return BR[2];
+  if(l.includes('saç')||l.includes('fue')||l.includes('dhi')||l.includes('sakal')||l.includes('kaş ekimi'))return BR[3];
+  if(l.includes('lasik')||l.includes('lasek')||l.includes('göz')||l.includes('katarakt')||l.includes('şaşılık'))return BR[4];
+  if(l.includes('diş')||l.includes('implant')||l.includes('zirkon')||l.includes('all-on')||l.includes('hollywood')||l.includes('ortodonti'))return BR[5];
+  if(l.includes('check'))return BR[6];
+  if(l.includes('jinekol')||l.includes('histerek')||l.includes('miyom')||l.includes('lapar')||l.includes('menopoz'))return BR[7];
+  if(l.includes('dbs')||l.includes('parkinson')||l.includes('tremor')||l.includes('beyin')||l.includes('epilepsi'))return BR[8];
+  if(l.includes('mide')||l.includes('bariatrik')||l.includes('bypass')||l.includes('sleeve'))return BR[9];
+  return BR[BR.length-1];
+}
+function ref(p){
+  const b=branch(p.treatment);
+  const n=pts.filter(x=>branch(x.treatment).k===b.k).findIndex(x=>x.id===p.id)+1;
+  return`AstMedi_Sanita_${b.code}${String(n).padStart(3,'0')}`;
+}
+function td(){return new Date().toLocaleDateString('tr-TR',{day:'numeric',month:'short',year:'numeric'});}
+function ts(){return new Date().toLocaleString('tr-TR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400);}
+function cp(v,e){e?.stopPropagation();navigator.clipboard.writeText(v).then(()=>toast('📋 Kopyalandı'));}
+function stcls(s){return ST.find(x=>x.lb===s)?.cls||'s-new';}
+
+/* ─── INIT UI ─── */
+function initUI(){
+  buildAddChips();
+  // populate branch filter
+  const bf=document.getElementById('bF');
+  while(bf.options.length>1)bf.remove(1);
+  const used=new Set(pts.map(p=>branch(p.treatment).k));
+  BR.filter(b=>used.has(b.k)).forEach(b=>{const o=new Option(b.em+' '+b.lb,b.k);bf.add(o);});
+  // populate status filter
+  const sf=document.getElementById('stF');
+  while(sf.options.length>1)sf.remove(1);
+  ST.forEach(s=>{const o=new Option(s.lb,s.lb);sf.add(o);});
+}
+
+/* ─── RENDER TABLE ─── */
+function render(){
+  const q=document.getElementById('srch').value.toLowerCase();
+  const bF=document.getElementById('bF').value;
+  const sF=document.getElementById('stF').value;
+  const list=pts.filter(p=>{
+    if(bF&&branch(p.treatment).k!==bF)return false;
+    if(sF&&p.status!==sF)return false;
+    if(q){const r=ref(p).toLowerCase();if(!p.name.toLowerCase().includes(q)&&!r.includes(q)&&!branch(p.treatment).lb.toLowerCase().includes(q))return false;}
+    return true;
+  });
+  document.getElementById('countBadge').textContent=list.length+' / '+pts.length+' hasta';
+  const tb=document.getElementById('tbody');
+  if(!list.length){tb.innerHTML=`<tr><td colspan="7"><div class="empty">🔍 Hasta bulunamadı</div></td></tr>`;return;}
+  tb.innerHTML=list.map(p=>{
+    const b=branch(p.treatment),r=ref(p),sc=stcls(p.status);
+    const steps=Object.values(p.pipeline),ld=steps.lastIndexOf(1);
+    const dots=steps.map((v,i)=>`<div class="dot${v?' on':i===ld+1?' cur':''}"></div>`).join('');
+    return`<tr class="data-row" onclick="openPanel(${p.id})">
+      <td><span class="ref-badge b-${b.k}" onclick="cp('${r}',event)" title="Kopyala">${r} 📋</span></td>
+      <td><div style="font-weight:600;font-size:12px;overflow:hidden;text-overflow:ellipsis">${p.name}</div>${p.age?`<div style="font-size:10px;color:var(--text3)">${p.age}${p.sage?' / '+p.sage:''} yaş</div>`:''}</td>
+      <td><span class="badge b-${b.k}">${b.em} ${b.lb}</span></td>
+      <td><span class="badge ${sc}">${p.status}</span></td>
+      <td><div class="dots">${dots}</div><div style="font-size:10px;color:var(--text3);margin-top:2px">${steps.filter(Boolean).length}/${steps.length}</div></td>
+      <td style="font-size:11px;color:var(--text2)">${p.nat||'—'}</td>
+      <td style="font-size:10px;color:var(--text3)">${p.updated}</td>
+    </tr>`;
+  }).join('');
+}
+function clearF(){document.getElementById('srch').value='';document.getElementById('bF').value='';document.getElementById('stF').value='';render();}
+
+/* ─── PANEL ─── */
+function openPanel(id){
+  const p=pts.find(x=>x.id===id);if(!p)return;
+  cid=id;
+  const b=branch(p.treatment),r=ref(p);
+  document.getElementById('pTitle').textContent=p.name;
+  document.getElementById('pRef').innerHTML=`<span class="ref-badge b-${b.k}" style="font-size:11px;padding:3px 9px" onclick="cp('${r}',event)">${r} 📋</span>`;
+  const isIVF=b.k==='IVF';
+
+  // general docs
+  const gc=GEN.map(d=>{const k=d.replace(/\W+/g,'_'),c=p.generalDocs[k];return`<div class="ci${c?' on':''}" onclick="togChk(${id},'generalDocs','${k}',this)"><input type="checkbox"${c?' checked':''} onclick="event.stopPropagation()"><span class="ci-label">${d}</span><span class="ci-tag">${c?'✓ Alındı':'Bekleniyor'}</span></div>`;}).join('');
+
+  // IVF tests
+  let ivfHtml='';
+  if(isIVF){
+    const ft=IVF_F.map(t=>{const k=t.replace(/\W+/g,'_'),c=p.femaleTests[k];return`<div class="ci${c?' on':''}" onclick="togChk(${id},'femaleTests','${k}',this)"><input type="checkbox"${c?' checked':''} onclick="event.stopPropagation()"><span class="ci-label" style="font-size:11px">${t}</span><span class="ci-tag">${c?'✓':''}</span></div>`;}).join('');
+    const mt=IVF_M.map(t=>{const k=t.replace(/\W+/g,'_'),c=p.maleTests[k];return`<div class="ci${c?' on':''}" onclick="togChk(${id},'maleTests','${k}',this)"><input type="checkbox"${c?' checked':''} onclick="event.stopPropagation()"><span class="ci-label" style="font-size:11px">${t}</span><span class="ci-tag">${c?'✓':''}</span></div>`;}).join('');
+    ivfHtml=`<div class="slabel">IVF Test Listesi</div><div class="t2"><div class="tbox"><div class="tbox-title">👩 Kadın (Female)</div><div class="checklist">${ft}</div></div><div class="tbox"><div class="tbox-title">👨 Erkek (Male)</div><div class="checklist">${mt}</div></div></div>`;
+  }
+
+  // pipeline
+  const ph=PIPE.map((s,i)=>{
+    const done=p.pipeline[s.id],vals=Object.values(p.pipeline),ld=vals.lastIndexOf(1);
+    const nc=done?'done':i===ld+1?'curr':'pend';
+    const tags=['Tamamlandı','Bekleniyor','Açıklama Gerekli','İlave Talep'].map(tag=>{
+      const tc=(done&&tag==='Tamamlandı')?'ptag-done':tag==='Bekleniyor'?'ptag-wait':'ptag-off';
+      return`<button class="ptag ${tc}" onclick="setPipe(${id},'${s.id}','${tag}')">${tag}</button>`;
+    }).join('');
+    return`<div class="prow"><div class="pnum ${nc}">${i+1}</div><div style="flex:1"><div class="ptitle">${s.lb}</div><div class="pdesc">${s.ds}</div><div class="ptags">${tags}</div></div></div>`;
+  }).join('');
+
+  // timeline
+  const tl=(p.tl||[]).slice().reverse().map(e=>`<div class="tl-row"><div class="tl-dot">⏱</div><div><div class="tl-ts">${e.ts}</div><div class="tl-msg">${e.msg}</div></div></div>`).join('');
+
+  const sopts=ST.map(s=>`<option${p.status===s.lb?' selected':''}>${s.lb}</option>`).join('');
+
+  document.getElementById('panelBody').innerHTML=`
+    <div class="slabel">Temel Bilgiler</div>
+    <div class="fg3">
+      <div class="ff"><label>Kayıt No</label><input value="${r}" readonly></div>
+      <div class="ff"><label>Ad Soyad</label><input id="e-name" value="${p.name}"></div>
+      <div class="ff"><label>Tedavi</label><input id="e-treat" value="${p.treatment}"></div>
+    </div>
+    <div class="fg3">
+      <div class="ff"><label>Yaş</label><input id="e-age" type="number" value="${p.age||''}"></div>
+      <div class="ff"><label>Eş Yaşı</label><input id="e-sage" type="number" value="${p.sage||''}"></div>
+      <div class="ff"><label>Uyruk</label><input id="e-nat" value="${p.nat||''}"></div>
+    </div>
+    <div class="fg">
+      <div class="ff"><label>İletişim (Email / WhatsApp)</label><input id="e-contact" value="${p.contact||''}"></div>
+      <div class="ff"><label>Durum</label><select id="e-status">${sopts}</select></div>
+    </div>
+
+    <div class="fg" style="margin-bottom:10px">
+      <div class="ff">
+        <label>Medeni Durum</label>
+        <div style="display:flex;gap:16px;margin-top:4px">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;text-transform:none;color:var(--text)">
+            <input type="radio" name="marital_${id}" value="Evli" ${(p.marital||'')==='Evli'?'checked':''} onchange="pts.find(x=>x.id===${id}).marital=this.value"> Evli
+          </label>
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;text-transform:none;color:var(--text)">
+            <input type="radio" name="marital_${id}" value="Evli Değil" ${(p.marital||'')==='Evli Değil'?'checked':''} onchange="pts.find(x=>x.id===${id}).marital=this.value"> Evli Değil
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--gray-lt);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:10px">
+      <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">📋 Vukuatlı Nüfus Kayıt Örneği</div>
+      <div style="font-size:11px;color:var(--text2);margin-bottom:8px">Seçenek: <strong>Ben, Ailem ve Eşim</strong></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${renderMiniUpload(p,id,'nufus_kayit','Nüfus Kayıt Belgesi')}
+        ${renderMiniUpload(p,id,'evlilik_belgesi','💍 Evlilik Belgesi')}
+      </div>
+    </div>
+
+    <div style="background:var(--gray-lt);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:10px">
+      <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">🪪 Kimlik / ID Cards</div>
+      <div class="t2" style="gap:8px">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:5px">👩 Kadın</div>
+          ${renderMiniUpload(p,id,'id_female_front','Ön Yüz')}
+          <div style="margin-top:5px">${renderMiniUpload(p,id,'id_female_back','Arka Yüz')}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:5px">👨 Erkek</div>
+          ${renderMiniUpload(p,id,'id_male_front','Ön Yüz')}
+          <div style="margin-top:5px">${renderMiniUpload(p,id,'id_male_back','Arka Yüz')}</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:var(--gray-lt);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:10px">
+      <div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px">📸 Fotoğraflar</div>
+      <div class="t2" style="gap:8px">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:5px">👩 Kadın</div>
+          ${renderMiniUpload(p,id,'photo_female','Fotoğraf Yükle')}
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--text2);margin-bottom:5px">👨 Erkek</div>
+          ${renderMiniUpload(p,id,'photo_male','Fotoğraf Yükle')}
+        </div>
+      </div>
+    </div>
+
+    <div class="slabel">Fiziksel & Alışkanlık</div>
+    <div class="fg3">
+      <div class="ff"><label>Boy (cm)</label><input id="e-height" type="number" value="${p.height||''}"></div>
+      <div class="ff"><label>Kilo (kg)</label><input id="e-weight" type="number" value="${p.weight||''}"></div>
+      <div class="ff"><label>BMI</label><input id="e-bmi" value="${p.height&&p.weight?+(p.weight/((p.height/100)**2)).toFixed(1):''}" readonly></div>
+    </div>
+    <div class="fg">
+      <div class="ff"><label>Sigara</label><select id="e-smoke"><option${p.smoking==='Hayır'?' selected':''}>Hayır</option><option${p.smoking==='Evet'?' selected':''}>Evet</option><option${!p.smoking||p.smoking==='Bilinmiyor'?' selected':''}>Bilinmiyor</option></select></div>
+      <div class="ff"><label>Alkol</label><select id="e-alc"><option${p.alcohol==='Hayır'?' selected':''}>Hayır</option><option${p.alcohol==='Evet'?' selected':''}>Evet</option><option${!p.alcohol||p.alcohol==='Bilinmiyor'?' selected':''}>Bilinmiyor</option></select></div>
+    </div>
+
+    <div class="slabel">Tıbbi Geçmiş</div>
+    <div class="fg">
+      <div class="ff"><label>Tıbbi Özgeçmiş / Tanı</label><textarea id="e-hist">${p.history||''}</textarea></div>
+      <div class="ff" style="display:flex;flex-direction:column;gap:6px">
+        <div class="ff"><label>Kullanılan İlaçlar</label><input id="e-meds" value="${p.meds||''}"></div>
+        <div class="ff"><label>Geçirilen Ameliyatlar</label><input id="e-surg" value="${p.surgeries||''}"></div>
+      </div>
+    </div>
+
+    <div class="slabel">Genel Evrak Kontrol (${GEN.filter(d=>p.generalDocs[d.replace(/\W+/g,'_')]).length}/${GEN.length})</div>
+    <div class="checklist">${gc}</div>
+
+    ${ivfHtml}
+
+    <div class="slabel">Workflow — ${Object.values(p.pipeline).filter(Boolean).length}/${PIPE.length} Tamamlandı</div>
+    <div class="pipe">${ph}</div>
+
+    <div class="slabel">Timeline</div>
+    <div style="display:flex;gap:6px;margin-bottom:8px">
+      <input id="newTl" placeholder="Not veya durum ekle..." style="flex:1;padding:6px 9px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:12px;font-family:'Inter',sans-serif;color:var(--text)" onkeydown="if(event.key==='Enter')addTl(${id})">
+      <button class="btn btn-green btn-sm" onclick="addTl(${id})">➤</button>
+    </div>
+    <div class="tl">${tl||'<div style="font-size:12px;color:var(--text3)">Henüz kayıt yok</div>'}</div>
+
+    <div class="slabel">Özel Notlar</div>
+    <textarea style="width:100%;padding:7px 9px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:12px;font-family:'Inter',sans-serif;color:var(--text);resize:vertical;min-height:60px" id="e-notes">${p.notes||''}</textarea>
+
+    <div class="slabel">📎 Dökümanlar & Dosyalar (${(p.files||[]).length})</div>
+    <div class="upload-zone" id="uploadZone"
+      ondragover="event.preventDefault();this.classList.add('drag')"
+      ondragleave="this.classList.remove('drag')"
+      ondrop="handleDrop(event,${id})">
+      <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx" onchange="handleFiles(this.files,${id})">
+      <div class="uz-label">📁 Dosyaları buraya sürükleyin veya <span onclick="document.getElementById('fileInput').click()">seçin</span></div>
+      <div style="font-size:10px;color:var(--text3);margin-top:4px">PDF, JPG, PNG, Word, Excel — max 5MB/dosya</div>
+    </div>
+    <div class="file-list" id="fileList">${renderFileList(p,id)}</div>
+  `;
+
+  // BMI auto-calc
+  ['e-height','e-weight'].forEach(id2=>{
+    const el=document.getElementById(id2);
+    if(el)el.addEventListener('input',()=>{
+      const h=+document.getElementById('e-height').value,w=+document.getElementById('e-weight').value;
+      document.getElementById('e-bmi').value=h&&w?+(w/((h/100)**2)).toFixed(1):'';
+    });
+  });
+
+  document.getElementById('panel').classList.add('open');
+  document.getElementById('panelOverlay').classList.add('open');
+}
+
+function closePanel(){
+  document.getElementById('panel').classList.remove('open');
+  document.getElementById('panelOverlay').classList.remove('open');
+  cid=null;
+}
+
+/* ─── CHECKLIST TOGGLE ─── */
+function togChk(pid,field,key,el){
+  const p=pts.find(x=>x.id===pid);if(!p)return;
+  if(!p[field])p[field]={};
+  p[field][key]=p[field][key]?0:1;
+  const c=p[field][key];
+  el.className='ci'+(c?' on':'');
+  el.querySelector('input').checked=!!c;
+  const ct=el.querySelector('.ci-tag');if(ct)ct.textContent=c?'✓ Alındı':'Bekleniyor';
+  p.updated=td();save();
+}
+
+/* ─── PIPELINE ─── */
+function setPipe(pid,sid,tag){
+  const p=pts.find(x=>x.id===pid);if(!p)return;
+  p.pipeline[sid]=tag==='Tamamlandı'?1:0;
+  if(tag==='Tamamlandı'){
+    const si=PIPE.findIndex(s=>s.id===sid);
+    const sm=['Bilgi İstendi','Evrak Alındı',"Sanita'ya İletildi",'Tedavi Planı Hazır','Tedavi Planı Hazır','Plân Hastaya Gönderildi','Hasta Onayladı','Sözleşme İmzalandı'];
+    const prev=p.status;
+    if(si<sm.length)p.status=sm[si];
+    if(p.status!==prev)addTlInner(p,`Durum: ${p.status}`);
+  }
+  p.updated=td();save();openPanel(pid);render();initUI();
+}
+
+/* ─── TIMELINE ─── */
+function addTlInner(p,msg){if(!p.tl)p.tl=[];p.tl.push({ts:ts(),msg});}
+function addTl(id){
+  const p=pts.find(x=>x.id===id);if(!p)return;
+  const inp=document.getElementById('newTl');const msg=inp.value.trim();if(!msg)return;
+  addTlInner(p,msg);inp.value='';p.updated=td();save();openPanel(id);
+}
+
+/* ─── SAVE ─── */
+async function doSave(){
+  const p=pts.find(x=>x.id===cid);if(!p)return;
+  const prev=p.status;
+  p.name=document.getElementById('e-name').value;
+  p.treatment=document.getElementById('e-treat').value;
+  p.age=document.getElementById('e-age').value;
+  p.sage=document.getElementById('e-sage').value;
+  p.nat=document.getElementById('e-nat').value;
+  p.contact=document.getElementById('e-contact').value;
+  p.status=document.getElementById('e-status').value;
+  p.height=document.getElementById('e-height').value;
+  p.weight=document.getElementById('e-weight').value;
+  p.history=document.getElementById('e-hist').value;
+  p.meds=document.getElementById('e-meds').value;
+  p.surgeries=document.getElementById('e-surg').value;
+  p.smoking=document.getElementById('e-smoke').value;
+  p.alcohol=document.getElementById('e-alc').value;
+  p.notes=document.getElementById('e-notes').value;
+  // marital saved live via onchange, just ensure it's persisted
+  if(p.status!==prev)addTlInner(p,`Durum güncellendi: ${p.status}`);
+  p.updated=td();
+  await save();
+  closePanel();initUI();render();
+  toast('✓ Kaydedildi');
+}
+
+/* ─── DELETE ─── */
+async function doDelete(){
+  if(!confirm('Bu hasta silinsin mi?'))return;
+  pts=pts.filter(x=>x.id!==cid);
+  await save();closePanel();initUI();render();
+  toast('Hasta silindi');
+}
+
+/* ─── ADD ─── */
+function buildAddChips(){
+  document.getElementById('addChips').innerHTML=BR.map(b=>`
+    <div class="branch-section">
+      <div class="bs-label">${b.em} ${b.lb}</div>
+      <div class="chips">${b.tr.map(t=>`<div class="chip" data-t="${t}" onclick="this.classList.toggle('sel')">${t}</div>`).join('')}</div>
+    </div>`).join('');
+}
+function toggleAddForm(){
+  const f=document.getElementById('addForm');
+  f.classList.toggle('open');
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
+  ['nf-name','nf-nat','nf-age','nf-sage','nf-contact','nf-diag','nf-notes'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+}
+async function doAdd(){
+  const name=document.getElementById('nf-name').value.trim();
+  if(!name){alert('Ad Soyad zorunludur');return;}
+  const chips=[...document.querySelectorAll('.chip.sel')];
+  const treatment=chips.map(c=>c.dataset.t).join(' + ')||'Belirlenmedi';
+  const newId=Math.max(0,...pts.map(p=>p.id))+1;
+  const np={id:newId,name,nat:document.getElementById('nf-nat').value||'',
+    age:document.getElementById('nf-age').value||'',sage:document.getElementById('nf-sage').value||'',
+    contact:document.getElementById('nf-contact').value||'',
+    treatment,diagnosis:document.getElementById('nf-diag').value||'',
+    status:'Yeni Kayıt',history:'',meds:'',surgeries:'',smoking:'',alcohol:'',
+    height:'',weight:'',
+    notes:document.getElementById('nf-notes').value||'',
+    pipeline:{info:0,docs:0,sanita:0,review:0,plan:0,sent:0,ok:0,contract:0},
+    generalDocs:{},femaleTests:{},maleTests:{},files:[],
+    updated:td(),tl:[{ts:ts(),msg:'Hasta kaydı oluşturuldu'}]};
+  pts.push(np);
+  await save();
+  const r=ref(np);
+  toast('✓ Eklendi: '+r);
+  toggleAddForm();initUI();render();
+}
+
+/* ─── EXPORT ─── */
+function exportCSV(){
+  const h='Kayıt No,Ad Soyad,Branş,Tedavi,Durum,Yaş,Uyruk,İletişim,Güncelleme\n';
+  const rows=pts.map(p=>[ref(p),p.name,branch(p.treatment).lb,p.treatment,p.status,p.age||'',p.nat||'',p.contact||'',p.updated].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\uFEFF'+h+rows],{type:'text/csv;charset=utf-8'}));
+  a.download='AstraMedica_'+td().replace(/ /g,'_')+'.csv';a.click();
+  toast('CSV indiriliyor...');
+}
+
+/* ─── MINI UPLOAD (single-slot per field) ─── */
+function renderMiniUpload(p,id,field,label){
+  const f=(p.docSlots||{})[field];
+  if(f){
+    return`<div class="file-item" style="margin-bottom:0">
+      <span class="file-icon">${fileIcon(f.name)}</span>
+      <a class="file-name" href="${f.data}" download="${f.name}">${f.name}</a>
+      <span class="file-meta">${f.size}</span>
+      <button class="file-del" onclick="delSlot(${id},'${field}',event)">✕</button>
+    </div>`;
+  }
+  return`<div style="display:flex;align-items:center;gap:6px">
+    <input type="file" id="slot_${id}_${field}" style="display:none" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx" onchange="handleSlot(${id},'${field}',this.files[0])">
+    <button class="btn btn-sm btn-ghost" style="border:1px dashed var(--border2);font-size:11px" onclick="document.getElementById('slot_${id}_${field}').click()">📎 ${label}</button>
+  </div>`;
+}
+
+function handleSlot(pid,field,file){
+  if(!file)return;
+  if(file.size>5*1024*1024){toast('⚠️ Max 5MB');return;}
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const p=pts.find(x=>x.id===pid);if(!p)return;
+    if(!p.docSlots)p.docSlots={};
+    p.docSlots[field]={name:file.name,size:fmtSize(file.size),date:td(),data:e.target.result};
+    addTlInner(p,`Belge yüklendi: ${field} — ${file.name}`);
+    p.updated=td();save();openPanel(pid);
+    toast('✓ '+file.name);
+  };
+  reader.readAsDataURL(file);
+}
+
+function delSlot(pid,field,e){
+  e.stopPropagation();
+  const p=pts.find(x=>x.id===pid);if(!p||!p.docSlots)return;
+  if(!confirm((p.docSlots[field]?.name||field)+' silinsin mi?'))return;
+  delete p.docSlots[field];
+  p.updated=td();save();openPanel(pid);
+  toast('Belge silindi');
+}
+
+/* ─── FILE UPLOAD ─── */
+function fileIcon(name){
+  const ext=name.split('.').pop().toLowerCase();
+  if(['jpg','jpeg','png','gif','webp'].includes(ext))return'🖼️';
+  if(ext==='pdf')return'📄';
+  if(['doc','docx'].includes(ext))return'📝';
+  if(['xls','xlsx'].includes(ext))return'📊';
+  return'📎';
+}
+function fmtSize(bytes){if(bytes<1024)return bytes+'B';if(bytes<1048576)return(bytes/1024).toFixed(1)+'KB';return(bytes/1048576).toFixed(1)+'MB';}
+
+function renderFileList(p,id){
+  if(!p.files||!p.files.length)return'';
+  return(p.files||[]).map((f,i)=>`
+    <div class="file-item">
+      <span class="file-icon">${fileIcon(f.name)}</span>
+      <a class="file-name" href="${f.data}" download="${f.name}" title="${f.name}">${f.name}</a>
+      <span class="file-meta">${f.size} · ${f.date}</span>
+      <button class="file-del" onclick="delFile(${id},${i},event)" title="Sil">✕</button>
+    </div>`).join('');
+}
+
+function handleDrop(e,id){
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.remove('drag');
+  handleFiles(e.dataTransfer.files,id);
+}
+
+function handleFiles(fileList,id){
+  const p=pts.find(x=>x.id===id);if(!p)return;
+  if(!p.files)p.files=[];
+  let added=0;
+  Array.from(fileList).forEach(f=>{
+    if(f.size>5*1024*1024){toast('⚠️ '+f.name+' 5MB limitini aşıyor');return;}
+    const reader=new FileReader();
+    reader.onload=e=>{
+      p.files.push({name:f.name,size:fmtSize(f.size),date:td(),data:e.target.result});
+      added++;p.updated=td();
+      addTlInner(p,`Dosya yüklendi: ${f.name}`);
+      save();
+      // refresh file list in panel without full re-render
+      const fl=document.getElementById('fileList');
+      if(fl)fl.innerHTML=renderFileList(p,id);
+      toast('✓ '+f.name+' yüklendi');
+    };
+    reader.readAsDataURL(f);
+  });
+}
+
+function delFile(id,idx,e){
+  e.stopPropagation();
+  const p=pts.find(x=>x.id===id);if(!p||!p.files)return;
+  if(!confirm(p.files[idx].name+' silinsin mi?'))return;
+  addTlInner(p,`Dosya silindi: ${p.files[idx].name}`);
+  p.files.splice(idx,1);p.updated=td();
+  save();
+  const fl=document.getElementById('fileList');
+  if(fl)fl.innerHTML=renderFileList(p,id);
+  toast('Dosya silindi');
+}
+
+load();
+</script>
+</body>
+</html>
